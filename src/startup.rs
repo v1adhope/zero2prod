@@ -1,0 +1,21 @@
+use crate::routes::{healthz, subscribe};
+use actix_web::{App, HttpServer, dev::Server, web};
+use sqlx::PgPool;
+use std::{net::TcpListener, time::Duration};
+
+pub fn run(listener: TcpListener, database: PgPool) -> std::io::Result<Server> {
+    let database = web::Data::new(database);
+
+    let srv = HttpServer::new(move || {
+        App::new()
+            .route("/healthz", web::get().to(healthz))
+            .route("/subscriptions", web::post().to(subscribe))
+            .app_data(database.clone())
+    })
+    .listen(listener)?
+    .client_disconnect_timeout(Duration::from_secs(10))
+    .shutdown_timeout(10)
+    .run();
+
+    Ok(srv)
+}

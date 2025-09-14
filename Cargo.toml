@@ -16,3 +16,11 @@ reqwest = "0.12.23"
 [dependencies]
 actix-web = "4"
 tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+config = "0.15"
+uuid = { version = "1", features = ["v7"] }
+
+[dependencies.sqlx]
+version = "0.8"
+default-features = false
+features = ["runtime-tokio", "postgres", "macros", "migrate", "uuid", "chrono"]

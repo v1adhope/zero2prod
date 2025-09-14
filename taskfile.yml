@@ -1,0 +1,33 @@
+version: "3"
+
+dotenv: [".env"]
+
+tasks:
+  clean:
+    cmds:
+      - task: down
+      - cmd: docker volume rm zero2prod_pgdata
+        ignore_error: true
+
+  up:
+    cmds:
+      - docker compose up -d
+
+  down:
+    cmds:
+      - docker compose down
+
+  restart:
+    cmds:
+      - task: down
+      - task: up
+
+  migration-add:
+    cmds:
+      - sqlx migrate add {{.name}}
+    requires:
+      vars: [name]
+
+  migration-run:
+    cmds:
+      - sqlx migrate run
