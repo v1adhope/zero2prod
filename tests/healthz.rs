@@ -1,6 +1,6 @@
 use std::net::TcpListener;
 
-#[actix_web::test]
+#[tokio::test]
 async fn healthz_works() {
     let host = spawn_app();
     let client = reqwest::Client::new();
@@ -20,7 +20,7 @@ fn spawn_app() -> String {
     let port = listener.local_addr().unwrap().port();
 
     let srv = zero2prod::run(listener).expect("failed to bind address");
-    actix_web::rt::spawn(srv);
+    tokio::spawn(srv);
 
     format!("http://127.0.0.1:{}", port)
 }
