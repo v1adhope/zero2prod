@@ -56,14 +56,34 @@ jobs:
 
   lint:
     runs-on: ubuntu-latest
-    env:
-      SQLX_OFFLINE: true
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: ${{ env.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ env.POSTGRES_DB }}
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - "5432:5432"
     steps:
       - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy
-      - run: rustup component add clippy
+      - uses: go-task/setup-task@v1
+        with:
+          version: 3.x
+      - run: cargo install sqlx-cli
+          --version=${{ env.SQLX_VERSION }}
+          --features ${{ env.SQLX_FEATURES }}
+          --no-default-features
+          --locked
+      - run: task migration-run
       - run: cargo clippy -- -D warnings
 
   fmt:
@@ -73,7 +93,6 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt
-      - run: rustup component add rustfmt
       - run: cargo fmt -- --check
 
   audit:
