@@ -56,6 +56,8 @@ jobs:
 
   lint:
     runs-on: ubuntu-latest
+    env:
+      SQLX_OFFLINE: true
     steps:
       - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@stable
@@ -66,8 +68,6 @@ jobs:
 
   fmt:
     runs-on: ubuntu-latest
-    env:
-      SQLX_OFFLINE: true
     steps:
       - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@stable
