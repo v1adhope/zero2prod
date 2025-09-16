@@ -1,9 +1,24 @@
+use once_cell::sync::Lazy;
 use reqwest::StatusCode;
+use secrecy::ExposeSecret;
 use serde::Serialize;
 use sqlx::{Connection, Executor, PgConnection, PgPool};
 use std::net::TcpListener;
 use uuid::Uuid;
-use zero2prod::config::{Database, get_config};
+use zero2prod::{
+    config::{Database, get_config},
+    telemetry::{get_subscriber, init_subscriber},
+};
+
+static TRACING: Lazy<()> = Lazy::new(|| {
+    if std::env::var("TEST_LOG").is_ok() {
+        let subscriber = get_subscriber("test".into(), "debug".into(), std::io::stdout);
+        init_subscriber(subscriber);
+    } else {
+        let subscriber = get_subscriber("test".into(), "debug".into(), std::io::sink);
+        init_subscriber(subscriber);
+    };
+});
 
 pub struct TestApp {
     pub host: String,
@@ -11,6 +26,8 @@ pub struct TestApp {
 }
 
 async fn spawn_app() -> TestApp {
+    Lazy::force(&TRACING);
+
     let mut cfg = get_config().expect("failed to read config");
     cfg.database.database_name = Uuid::now_v7().to_string();
 
@@ -30,14 +47,14 @@ async fn spawn_app() -> TestApp {
 }
 
 pub async fn configure_database(cfg: &Database) -> PgPool {
-    let mut conn = PgConnection::connect(&cfg.conn_str_without_db())
+    let mut conn = PgConnection::connect(&cfg.conn_str_without_db().expose_secret())
         .await
         .expect("failed to connect to Postgres");
     conn.execute(format!(r#"create database "{}""#, cfg.database_name).as_str())
         .await
         .expect("failed to create database");
 
-    let pool = PgPool::connect(&cfg.conn_str())
+    let pool = PgPool::connect(&cfg.conn_str().expose_secret())
         .await
         .expect("failed to connect to Postgres");
     sqlx::migrate!()
