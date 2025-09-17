@@ -1,6 +1,5 @@
 use once_cell::sync::Lazy;
 use reqwest::StatusCode;
-use secrecy::ExposeSecret;
 use serde::Serialize;
 use sqlx::{Connection, Executor, PgConnection, PgPool};
 use std::net::TcpListener;
@@ -47,14 +46,14 @@ async fn spawn_app() -> TestApp {
 }
 
 pub async fn configure_database(cfg: &Database) -> PgPool {
-    let mut conn = PgConnection::connect(&cfg.conn_str_without_db().expose_secret())
+    let mut conn = PgConnection::connect_with(&cfg.without_db())
         .await
         .expect("failed to connect to Postgres");
     conn.execute(format!(r#"create database "{}""#, cfg.database_name).as_str())
         .await
         .expect("failed to create database");
 
-    let pool = PgPool::connect(&cfg.conn_str().expose_secret())
+    let pool = PgPool::connect_with(cfg.with_db())
         .await
         .expect("failed to connect to Postgres");
     sqlx::migrate!()

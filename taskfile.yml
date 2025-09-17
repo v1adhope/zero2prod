@@ -11,7 +11,7 @@ tasks:
 
   up:
     cmds:
-      - docker compose up -d
+      - docker compose up -d --build
       - task: migration-run
 
   down:

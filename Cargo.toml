@@ -18,6 +18,7 @@ actix-web = "4"
 tracing-actix-web = { version = "0.7", features = ["uuid_v7"] }
 tokio = { version = "1", features = ["full"] }
 serde = { version = "1", features = ["derive"] }
+serde-aux = "4"
 config = "0.15"
 uuid = { version = "1", features = ["v7"] }
 tracing = { version = "0.1" }

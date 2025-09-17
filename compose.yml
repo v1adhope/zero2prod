@@ -1,4 +1,16 @@
 services:
+  zero2prod:
+    build: .
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      APP_ENV: ${APP_ENV}
+    depends_on:
+      postgres:
+        restart: true
+        condition: service_healthy
+
   postgres:
     image: postgres:17
     restart: always

@@ -84,6 +84,7 @@ jobs:
           --no-default-features
           --locked
       - run: task migration-run
+      - run: cargo sqlx prepare --workspace --check
       - run: cargo clippy -- -D warnings
 
   fmt:

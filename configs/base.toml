@@ -1,9 +1,9 @@
 [service]
-host = "127.0.0.1:8080"
+host = "0.0.0.0:80"
 
 [database]
 username = "postgres"
 password = "postgres"
-host = "localhost"
+host = "postgres"
 port = "5432"
 database_name = "zero2prod"

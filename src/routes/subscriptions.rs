@@ -21,10 +21,10 @@ pub async fn subscribe(
     database: web::Data<PgPool>,
 ) -> impl Responder {
     match insert_subscriber(&form, &database).await {
-        Ok(_) => HttpResponse::Ok(),
+        Ok(_) => HttpResponse::Ok().finish(),
         Err(e) => {
             tracing::error!("failed to execute query: {e:?}");
-            HttpResponse::InternalServerError()
+            HttpResponse::InternalServerError().finish()
         }
     }
 }
