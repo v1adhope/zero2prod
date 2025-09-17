@@ -4,6 +4,5 @@ host = "0.0.0.0:80"
 [database]
 username = "postgres"
 password = "postgres"
-host = "postgres"
 port = "5432"
 database_name = "zero2prod"
