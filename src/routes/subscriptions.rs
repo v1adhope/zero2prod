@@ -18,10 +18,7 @@ impl TryFrom<SubscribeForm> for NewSubscriber {
     fn try_from(value: SubscribeForm) -> Result<Self, Self::Error> {
         let email = Email::parse(value.email)?;
         let name = SubscriberName::parse(value.name)?;
-        Ok(Self {
-            email: email,
-            name: name,
-        })
+        Ok(Self { email, name })
     }
 }
 
