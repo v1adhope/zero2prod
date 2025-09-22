@@ -29,6 +29,7 @@ async fn spawn_app() -> TestApp {
 
     let mut cfg = get_config().expect("failed to read config");
     cfg.database.database_name = Uuid::now_v7().to_string();
+    cfg.database.host = "127.0.0.1".to_string();
 
     let listener = TcpListener::bind("127.0.0.1:0").expect("failed to bind random port");
     let port = listener.local_addr().unwrap().port();
@@ -114,7 +115,7 @@ async fn subscribe_returns_a_200_for_valid_form_data() {
 }
 
 #[tokio::test]
-async fn subscribe_returns_a_400_when_data_is_missing() {
+async fn subscribe_returns_a_400() {
     let app = spawn_app().await;
     let client = reqwest::Client::new();
     let test_cases = vec![
@@ -137,6 +138,27 @@ async fn subscribe_returns_a_400_when_data_is_missing() {
             Subscription {
                 name: None,
                 email: None,
+            },
+        ),
+        (
+            "Empty email",
+            Subscription {
+                name: Some("vla".to_string()),
+                email: Some("".to_string()),
+            },
+        ),
+        (
+            "Empty name",
+            Subscription {
+                name: Some("".to_string()),
+                email: Some("vla@example.com".to_string()),
+            },
+        ),
+        (
+            "Invalid email",
+            Subscription {
+                name: Some("vla".to_string()),
+                email: Some("vla-example.com".to_string()),
             },
         ),
     ];
