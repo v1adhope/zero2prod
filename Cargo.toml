@@ -11,7 +11,8 @@ path = "src/main.rs"
 name = "zero2prod"
 
 [dev-dependencies]
-reqwest = "0.12.23"
+wiremock = "0.6"
+serde_json = "1"
 
 [dependencies]
 actix-web = "4"
@@ -33,6 +34,7 @@ validator = "0.20"
 fake = "4"
 quickcheck = "1"
 quickcheck_macros = "1"
+reqwest = { version = "0.12", features = ["json"] }
 
 [dependencies.sqlx]
 version = "0.8"

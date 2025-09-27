@@ -6,3 +6,9 @@ username = "postgres"
 password = "postgres"
 port = "5432"
 database_name = "zero2prod"
+
+[email_client]
+base_url = "https://example.com"
+sender = "email@example.com"
+auth_token = "my-secret-token"
+timeout_seconds = 10

@@ -2,10 +2,13 @@ use secrecy::{ExposeSecret, SecretString};
 use serde_aux::prelude::deserialize_number_from_string;
 use sqlx::postgres::PgConnectOptions;
 
+use crate::domain::Email;
+
 #[derive(serde::Deserialize)]
 pub struct Settings {
     pub service: Service,
     pub database: Database,
+    pub email_client: EmailClient,
 }
 
 #[derive(serde::Deserialize)]
@@ -34,6 +37,24 @@ impl Database {
             .password(self.password.expose_secret())
             .host(&self.host)
             .port(self.port)
+    }
+}
+
+#[derive(serde::Deserialize)]
+pub struct EmailClient {
+    pub base_url: String,
+    pub sender: String,
+    pub auth_token: SecretString,
+    pub timeout_seconds: u64,
+}
+
+impl EmailClient {
+    pub fn sender(&self) -> Result<Email, String> {
+        Email::parse(self.sender.clone())
+    }
+
+    pub fn timeout(&self) -> std::time::Duration {
+        std::time::Duration::from_secs(self.timeout_seconds * 1000)
     }
 }
 
